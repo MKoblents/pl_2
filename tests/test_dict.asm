@@ -2,30 +2,37 @@ section .data
     %include "inc/colon.inc"
     %include "inc/words.inc"
     
-    ; Тестовые строки
     test_key1: db "third word", 0
     test_key2: db "second word", 0
     test_key3: db "first word", 0
     test_key4: db "nonexistent", 0
     test_key5: db "", 0
     
-    ; Сообщения
     pass_msg: db "PASS", 10
     pass_len: equ $ - pass_msg
     fail_msg: db "FAIL", 10
     fail_len: equ $ - fail_msg
-    test1_msg: db "Test 1: Find 'third word'", 10
-    test1_len: equ $ - test1_msg
-    test2_msg: db "Test 2: Find 'second word'", 10
-    test2_len: equ $ - test2_msg
-    test3_msg: db "Test 3: Find 'first word'", 10
-    test3_len: equ $ - test3_msg
-    test4_msg: db "Test 4: Find nonexistent word", 10
-    test4_len: equ $ - test4_msg
-    test5_msg: db "Test 5: Find empty string", 10
-    test5_len: equ $ - test5_msg
-    test6_msg: db "Test 6: Verify linked list structure", 10
-    test6_len: equ $ - test6_msg
+    
+    msg1: db "Test 1: third word", 10
+    len1: equ $ - msg1
+    msg2: db "Test 2: second word", 10
+    len2: equ $ - msg2
+    msg3: db "Test 3: first word", 10
+    len3: equ $ - msg3
+    msg4: db "Test 4: nonexistent", 10
+    len4: equ $ - msg4
+    msg5: db "Test 5: empty string", 10
+    len5: equ $ - msg5
+    msg6: db "Test 6: list structure", 10
+    len6: equ $ - msg6
+
+%macro print_str 2
+    mov rax, 1
+    mov rdi, 1
+    mov rsi, %1
+    mov rdx, %2
+    syscall
+%endmacro
 
 section .text
     extern find_word
@@ -34,214 +41,104 @@ section .text
     global _start
 
 _start:
-    ; Тест 1: Поиск "third word"
-    mov rdi, test1_msg
-    mov rax, 1
-    mov rsi, test1_msg
-    mov rdx, test1_len
-    syscall
-    
+    print_str msg1, len1
     mov rdi, test_key1
     mov rsi, dict_head
     mov rsi, [rsi]
     call find_word
-    
     test rax, rax
-    jz .test1_fail
-    
-    ; Проверяем, что нашли правильный узел
-    mov rdi, [rax + 8]      ; ключ узла
+    jz .t1_fail
+    mov rdi, [rax+8]
     mov rsi, test_key1
     call string_equals
     test rax, rax
-    jz .test1_fail
-    
-    mov rdi, pass_msg
-    mov rax, 1
-    mov rsi, pass_msg
-    mov rdx, pass_len
-    syscall
-    jmp .test2
-    
-.test1_fail:
-    mov rdi, fail_msg
-    mov rax, 1
-    mov rsi, fail_msg
-    mov rdx, fail_len
-    syscall
+    jz .t1_fail
+    print_str pass_msg, pass_len
+    jmp .t2
+.t1_fail:
+    print_str fail_msg, fail_len
 
-.test2:
-    ; Тест 2: Поиск "second word"
-    mov rdi, test2_msg
-    mov rax, 1
-    mov rsi, test2_msg
-    mov rdx, test2_len
-    syscall
-    
+.t2:
+    print_str msg2, len2
     mov rdi, test_key2
     mov rsi, dict_head
     mov rsi, [rsi]
     call find_word
-    
     test rax, rax
-    jz .test2_fail
-    
-    mov rdi, [rax + 8]
+    jz .t2_fail
+    mov rdi, [rax+8]
     mov rsi, test_key2
     call string_equals
     test rax, rax
-    jz .test2_fail
-    
-    mov rdi, pass_msg
-    mov rax, 1
-    mov rsi, pass_msg
-    mov rdx, pass_len
-    syscall
-    jmp .test3
-    
-.test2_fail:
-    mov rdi, fail_msg
-    mov rax, 1
-    mov rsi, fail_msg
-    mov rdx, fail_len
-    syscall
+    jz .t2_fail
+    print_str pass_msg, pass_len
+    jmp .t3
+.t2_fail:
+    print_str fail_msg, fail_len
 
-.test3:
-    ; Тест 3: Поиск "first word"
-    mov rdi, test3_msg
-    mov rax, 1
-    mov rsi, test3_msg
-    mov rdx, test3_len
-    syscall
-    
+.t3:
+    print_str msg3, len3
     mov rdi, test_key3
     mov rsi, dict_head
     mov rsi, [rsi]
     call find_word
-    
     test rax, rax
-    jz .test3_fail
-    
-    mov rdi, [rax + 8]
+    jz .t3_fail
+    mov rdi, [rax+8]
     mov rsi, test_key3
     call string_equals
     test rax, rax
-    jz .test3_fail
-    
-    mov rdi, pass_msg
-    mov rax, 1
-    mov rsi, pass_msg
-    mov rdx, pass_len
-    syscall
-    jmp .test4
-    
-.test3_fail:
-    mov rdi, fail_msg
-    mov rax, 1
-    mov rsi, fail_msg
-    mov rdx, fail_len
-    syscall
+    jz .t3_fail
+    print_str pass_msg, pass_len
+    jmp .t4
+.t3_fail:
+    print_str fail_msg, fail_len
 
-.test4:
-    ; Тест 4: Поиск несуществующего слова
-    mov rdi, test4_msg
-    mov rax, 1
-    mov rsi, test4_msg
-    mov rdx, test4_len
-    syscall
-    
+.t4:
+    print_str msg4, len4
     mov rdi, test_key4
     mov rsi, dict_head
     mov rsi, [rsi]
     call find_word
-    
     test rax, rax
-    jnz .test4_fail
-    
-    mov rdi, pass_msg
-    mov rax, 1
-    mov rsi, pass_msg
-    mov rdx, pass_len
-    syscall
-    jmp .test5
-    
-.test4_fail:
-    mov rdi, fail_msg
-    mov rax, 1
-    mov rsi, fail_msg
-    mov rdx, fail_len
-    syscall
+    jnz .t4_fail
+    print_str pass_msg, pass_len
+    jmp .t5
+.t4_fail:
+    print_str fail_msg, fail_len
 
-.test5:
-    ; Тест 5: Поиск пустой строки
-    mov rdi, test5_msg
-    mov rax, 1
-    mov rsi, test5_msg
-    mov rdx, test5_len
-    syscall
-    
+.t5:
+    print_str msg5, len5
     mov rdi, test_key5
     mov rsi, dict_head
     mov rsi, [rsi]
     call find_word
-    
     test rax, rax
-    jnz .test5_fail
-    
-    mov rdi, pass_msg
-    mov rax, 1
-    mov rsi, pass_msg
-    mov rdx, pass_len
-    syscall
-    jmp .test6
-    
-.test5_fail:
-    mov rdi, fail_msg
-    mov rax, 1
-    mov rsi, fail_msg
-    mov rdx, fail_len
-    syscall
+    jnz .t5_fail
+    print_str pass_msg, pass_len
+    jmp .t6
+.t5_fail:
+    print_str fail_msg, fail_len
 
-.test6:
-    ; Тест 6: Проверка структуры связного списка
-    mov rdi, test6_msg
-    mov rax, 1
-    mov rsi, test6_msg
-    mov rdx, test6_len
-    syscall
-    
-    ; Проверяем, что head не равен 0
+.t6:
+    print_str msg6, len6
     mov rax, dict_head
     mov rax, [rax]
     test rax, rax
-    jz .test6_fail
-    
-    ; Проверяем, что первый узел указывает на второй (или 0 если только один узел)
+    jz .t6_fail
     mov rbx, rax
-    mov rax, [rbx]        ; next первого узла
+    mov rax, [rbx]
     test rax, rax
-    jz .test6_pass        ; если 0, значит только один узел - это ок
-    
-    ; Проверяем, что второй узел существует
+    jz .t6_pass
     mov rbx, rax
-    mov rax, [rbx + 8]    ; key второго узла
+    mov rax, [rbx+8]
     test rax, rax
-    jz .test6_fail
-    
-.test6_pass:
-    mov rdi, pass_msg
-    mov rax, 1
-    mov rsi, pass_msg
-    mov rdx, pass_len
-    syscall
+    jz .t6_fail
+.t6_pass:
+    print_str pass_msg, pass_len
     jmp .exit
-    
-.test6_fail:
-    mov rdi, fail_msg
-    mov rax, 1
-    mov rsi, fail_msg
-    mov rdx, fail_len
-    syscall
+.t6_fail:
+    print_str fail_msg, fail_len
 
 .exit:
     mov rdi, 0

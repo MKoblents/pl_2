@@ -24,7 +24,7 @@ _start:
         pop rcx
         test rax, rax
         jz .read_end
-        cmp rax, 0xA
+        cmp al, 0xA
         jz .read_end
         mov [buffer+rcx], al
         inc rcx
@@ -33,20 +33,18 @@ _start:
         jmp .read_loop
     .read_end:
         mov byte [buffer+rcx], 0
+        mov rdi, buffer
+        mov rsi, dict_head
+        mov rsi, [rsi]
+        call find_word
 
+        test rax, rax
+        jz .not_found
 
-    mov rdi, buffer
-    mov rsi, dict_head
-    mov rsi, [rsi]
-    call find_word
-
-    test rax, rax
-    jz .not_found
-
-    mov rdi, [rax+16]
-    call print_string
-    call print_newline
-    jmp .exit
+        mov rdi, [rax+16]
+        call print_string
+        call print_newline
+        jmp .exit
 
     .not_found:
         mov rdi, 2
@@ -54,7 +52,7 @@ _start:
         mov rdx, err_len
         mov rax, 1
         syscall
-    
+
     .exit:
         mov rdi, 0
         call exit

@@ -1,1 +1,1 @@
-   extern find_word
+extern find_word
