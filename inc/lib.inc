@@ -1,13 +1,13 @@
 extern exit
-extern strint_length
+extern string_length
 extern print_string
 extern print_char
-extern print_newliane
-extern print_unit
+extern print_newline
+extern print_uint
 extern print_int
 extern string_equals
 extern read_char
 extern read_word
-extern parse_unit
+extern parse_uint
 extern parse_int
 extern string_copy

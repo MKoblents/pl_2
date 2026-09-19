@@ -1,6 +1,8 @@
+
 SRC_DIR = src
 INC_DIR = inc
 BUILD_DIR = build
+TEST_DIR = tests
 
 NASM = nasm
 LD = ld
@@ -28,13 +30,14 @@ $(LIB_O): lib/lib.asm
 	@mkdir -p $(BUILD_DIR)
 	$(NASM) $(NASMFLAGS) $< -o $@
 
-test: $(MAIN)
-	@echo "=== Тест 1: Поиск существующего слова ==="
-	@echo "second word" | ./$(MAIN)
-	@echo ""
-	@echo "=== Тест 2: Поиск несуществующего слова ==="
-	@echo "unknown" | ./$(MAIN)
-	@echo ""
+
+test: $(MAIN) $(BUILD_DIR)/test_dict
+	@./$(TEST_DIR)/run_tests.sh
+
+$(BUILD_DIR)/test_dict: $(TEST_DIR)/test_dict.asm $(DICT_O) $(LIB_O)
+	@mkdir -p $(BUILD_DIR)
+	$(NASM) $(NASMFLAGS) $< -o $(BUILD_DIR)/test_dict.o
+	$(LD) $(BUILD_DIR)/test_dict.o $(DICT_O) $(LIB_O) -o $@
 
 clean:
 	rm -rf $(BUILD_DIR)
