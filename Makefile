@@ -1,30 +1,42 @@
+SRC_DIR = src
+INC_DIR = inc
+BUILD_DIR = build
+
 NASM = nasm
 LD = ld
-NASMFLAGS = -f elf64
+NASMFLAGS = -f elf64 -I $(INC_DIR)/
 
-all:main
+MAIN = $(BUILD_DIR)/main
+MAIN_O = $(BUILD_DIR)/main.o
+DICT_O = $(BUILD_DIR)/dict.o
+LIB_O = $(BUILD_DIR)/lib.o
 
-main: main.o dict.o lib.o
-	$(LD) main.o dict.o lib.o -o main
+all: $(MAIN)
 
-main.o: main.asm colon.inc words.inc
-	$(NASM) $(NASMFLAGS) main.asm -o main.o
+$(MAIN): $(MAIN_O) $(DICT_O) $(LIB_O)
+	$(LD) $^ -o $@
 
-dict.o: dict.asm dict.inc colon.inc
-	$(NASM) $(NASMFLAGS) dict.asm -o dict.o
+$(MAIN_O): $(SRC_DIR)/main.asm $(INC_DIR)/colon.inc $(INC_DIR)/words.inc
+	@mkdir -p $(BUILD_DIR)
+	$(NASM) $(NASMFLAGS) $< -o $@
 
-lib.o: lib/lib.asm lib.inc
-	$(NASM) $(NASMFLAGS) lib/lib.asm -o lib.o
+$(DICT_O): $(SRC_DIR)/dict.asm $(INC_DIR)/dict.inc $(INC_DIR)/colon.inc
+	@mkdir -p $(BUILD_DIR)
+	$(NASM) $(NASMFLAGS) $< -o $@
 
-test: main
-	@echo "Тест 1: Поиск существующего слова"
-	@echo "second word" | ./main
+$(LIB_O): lib/lib.asm
+	@mkdir -p $(BUILD_DIR)
+	$(NASM) $(NASMFLAGS) $< -o $@
+
+test: $(MAIN)
+	@echo "=== Тест 1: Поиск существующего слова ==="
+	@echo "second word" | ./$(MAIN)
 	@echo ""
-	@echo "Тест 2: Поиск несуществующего слова"
-	@echo "unknown" | ./main
+	@echo "=== Тест 2: Поиск несуществующего слова ==="
+	@echo "unknown" | ./$(MAIN)
 	@echo ""
 
 clean:
-	rm -f *.o main
+	rm -rf $(BUILD_DIR)
 
 .PHONY: all test clean

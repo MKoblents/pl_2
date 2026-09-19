@@ -1,19 +1,20 @@
-
+# Объектные файлы
 *.o
 
+# Исполняемые файлы
 main
-dict
-*.out
-*.bin
-*.elf
+test_find
+test_words
 
+# Папка сборки
+build/
+
+# Временные файлы
 *~
 *.swp
-*.swo
 .vscode/
 .idea/
 
-*.lst
-test_colon.asm
-test_*.asm
-test_*
+# Python кэш (из субмодуля)
+__pycache__/
+*.pyc
