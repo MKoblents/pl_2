@@ -14,3 +14,5 @@ dict
 .idea/
 
 *.lst
+test_colon.asm
+test_*.asm
