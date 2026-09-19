@@ -14,7 +14,3 @@ dict_key_%+NODE_COUNTER: db %1, 0
     %2 equ $
     %assign PREV_NODE NODE_COUNTER
 %endmacro
-
-global dict_head
-section .data
-dict_head: dq dict_node_%+NODE_COUNTER

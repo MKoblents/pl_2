@@ -16,3 +16,4 @@ dict
 *.lst
 test_colon.asm
 test_*.asm
+test_*
