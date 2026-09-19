@@ -1,0 +1,3 @@
+[submodule "lib"]
+	path = lib
+	url = ssh://git@gitlab.se.ifmo.ru:4815/KoblentsM/assignment-1-io-library.git

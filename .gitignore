@@ -1,0 +1,16 @@
+
+*.o
+
+main
+dict
+*.out
+*.bin
+*.elf
+
+*~
+*.swp
+*.swo
+.vscode/
+.idea/
+
+*.lst
