@@ -4,8 +4,10 @@ section .bss
 section .data
     %include "colon.inc"
     %include "words.inc"
-    err_msg: db "Word not found", 10
-    err_len equ $ - err_msg
+    err_not_found: db "Word not found", 10
+    len_not_found: equ $ - err_not_found
+    err_too_long: db "input is too long", 10
+    len_too_long: equ $ - err_too_long
 
 section .text
     global _start
@@ -25,34 +27,44 @@ _start:
         test rax, rax
         jz .read_end
         cmp al, 0xA
-        jz .read_end
-        mov [buffer+rcx], al
+        je .read_end
+        cmp al, 0xD
+        je .read_end   
+        cmp rcx, 255
+        jge .too_long
+        mov [buffer + rcx], al
         inc rcx
-        cmp rcx, 254
-        jz .read_end
         jmp .read_loop
     .read_end:
-        mov byte [buffer+rcx], 0
+        mov byte [buffer + rcx], 0
         mov rdi, buffer
         mov rsi, dict_head
         mov rsi, [rsi]
         call find_word
-
         test rax, rax
         jz .not_found
-
-        mov rdi, [rax+16]
+        mov rdi, [rax + 16]
         call print_string
         call print_newline
-        jmp .exit
-
-    .not_found:
-        mov rdi, 2
-        mov rsi, err_msg
-        mov rdx, err_len
+        jmp .exit_ok
+    .too_long:
         mov rax, 1
+        mov rdi, 2
+        mov rsi, err_too_long
+        mov rdx, len_too_long
         syscall
-
-    .exit:
-        mov rdi, 0
+        jmp .exit_fail
+    .not_found:
+        mov rax, 1
+        mov rdi, 2
+        mov rsi, err_not_found
+        mov rdx, len_not_found
+        syscall
+        
+    .exit_fail:
+        mov rdi, 1
+        call exit
+        
+    .exit_ok:
+        xor rdi, rdi
         call exit

@@ -1,7 +1,6 @@
 SRC_DIR = src
 INC_DIR = inc
 BUILD_DIR = build
-TEST_DIR = tests
 
 NASM = nasm
 LD = ld
@@ -11,8 +10,6 @@ MAIN = $(BUILD_DIR)/main
 MAIN_O = $(BUILD_DIR)/main.o
 DICT_O = $(BUILD_DIR)/dict.o
 LIB_O = $(BUILD_DIR)/lib.o
-TEST_O = $(BUILD_DIR)/test_dict.o
-TEST_BIN = $(BUILD_DIR)/test_dict
 
 all: $(MAIN)
 
@@ -31,14 +28,10 @@ $(LIB_O): lib/lib.asm
 	@mkdir -p $(BUILD_DIR)
 	$(NASM) $(NASMFLAGS) $< -o $@
 
-$(TEST_BIN): $(TEST_DIR)/test_dict.asm $(DICT_O) $(LIB_O)
-	@mkdir -p $(BUILD_DIR)
-	$(NASM) $(NASMFLAGS) $< -o $(TEST_O)
-	$(LD) $(TEST_O) $(DICT_O) $(LIB_O) -o $@
 
-test: $(MAIN) $(TEST_BIN)
-	@chmod +x $(TEST_DIR)/run_tests.sh
-	@./$(TEST_DIR)/run_tests.sh
+test: $(MAIN)
+	@echo "Running Python tests..."
+	@python3 tests/test_app.py
 
 clean:
 	rm -rf $(BUILD_DIR)

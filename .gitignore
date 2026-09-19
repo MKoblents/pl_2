@@ -18,3 +18,5 @@ build/
 # Python кэш (из субмодуля)
 __pycache__/
 *.pyc
+
+tests/generate_words.py
